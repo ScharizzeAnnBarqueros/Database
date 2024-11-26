@@ -1,7 +1,8 @@
 <?php
 include("connect.php");
 $query = "SELECT * FROM closefriends";
-$result = mysqli_query($conn, $query);
+$result = executeQuery($query);
+
 ?>
 <!doctype html>
 <html lang="en">
@@ -22,10 +23,10 @@ $result = mysqli_query($conn, $query);
       <?php
       if (mysqli_num_rows($result) > 0) {
         while ($user = mysqli_fetch_assoc($result)) {
-          $isCloseFriend = $user["isCloseFriend"] == "Yes";
-          $cardClasses = $isCloseFriend ? "card rounded-4 shadow my-3 mx-5" : "card rounded-4 my-3 mx-5";
-          $backgroundColor = $isCloseFriend ? "lightblue" : "darkgray";
-          $fontColor = $isCloseFriend ? "black" : "lightgray";
+          $status = $user["status"] == "Close Friend";
+          $cardClasses = $status ? "card rounded-4 shadow my-3 mx-5" : "card rounded-4 my-3 mx-5";
+          $backgroundColor = $status ? "lightblue" : "darkgray";
+          $fontColor = $status ? "black" : "lightgray";
           ?>
           <div class="col-12">
             <div class="<?php echo $cardClasses; ?>" style="background-color: <?php echo $backgroundColor; ?>; color: <?php echo $fontColor; ?>;">

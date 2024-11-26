@@ -17,7 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 // Fetch records
 $selectQuery = "SELECT * FROM closefriends";
-$result = mysqli_query($conn, $selectQuery);
+$result = executeQuery($query);
+
 ?>
 
 <!doctype html>
