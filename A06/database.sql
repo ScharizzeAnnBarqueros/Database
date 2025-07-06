@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2024 at 06:16 PM
+-- Generation Time: Jul 06, 2025 at 03:35 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -53,8 +53,8 @@ CREATE TABLE `closefriends` (
   `closeFriendID` int(1) NOT NULL,
   `ownerID` int(11) DEFAULT NULL,
   `userID` int(11) DEFAULT NULL,
-  `f_Name` varchar(30) NOT NULL,
-  `l_Name` varchar(30) NOT NULL,
+  `fName` varchar(30) NOT NULL,
+  `lName` varchar(30) NOT NULL,
   `status` varchar(15) NOT NULL DEFAULT 'closeFriend',
   `is_deleted` varchar(5) NOT NULL DEFAULT 'yes'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -63,19 +63,26 @@ CREATE TABLE `closefriends` (
 -- Dumping data for table `closefriends`
 --
 
-INSERT INTO `closefriends` (`closeFriendID`, `ownerID`, `userID`, `f_Name`, `l_Name`, `status`, `is_deleted`) VALUES
+INSERT INTO `closefriends` (`closeFriendID`, `ownerID`, `userID`, `fName`, `lName`, `status`, `is_deleted`) VALUES
 (1, 0, 0, 'Joseph', 'Maliza', 'Close Friend', 'yes'),
 (2, 0, 0, 'Zoey', 'Miller', 'Friend', 'yes'),
 (3, 0, 0, 'Tin', 'Ingles', 'Friend', 'yes'),
 (4, 0, 0, 'Valerie', '', 'Close Friend', 'yes'),
 (5, 0, 0, 'Neil', 'Avellana', 'Friend', 'yes'),
-(6, 0, 0, 'scha', 'barqueros', 'Close Friend', 'no'),
-(7, 0, 0, 'axl', 'malabanan', 'Close Friend', 'no'),
+(6, 0, 0, 'scha', 'barqueros', 'Close Friend', 'yes'),
+(7, 0, 0, 'axl', 'malabanan', 'Friend', 'yes'),
 (8, 0, 0, 'luka', 'floren', 'Friend', 'yes'),
-(9, 0, 0, 'waffle', 'nei', 'Close Friend', 'no'),
+(9, 0, 0, 'waffle', 'nei', 'Close Friend', 'yes'),
 (10, 0, 0, 'oreo', '', ' Friend', 'no'),
 (11, 0, 0, 'albert ', '', ' Friend', 'no'),
-(12, NULL, NULL, '', '', '', 'yes');
+(12, NULL, NULL, '', '', '', 'yes'),
+(13, NULL, NULL, 'bea', 'miller', 'Close Friend', 'yes'),
+(14, NULL, NULL, 'bea', 'miller', 'Close Friend', 'yes'),
+(15, NULL, NULL, 'bea', 'miller', 'Close Friend', 'yes'),
+(16, NULL, NULL, 'bea', 'miller', 'Close Friend', 'no'),
+(17, NULL, NULL, 'bea', 'miller', 'Close Friend', 'yes'),
+(18, NULL, NULL, 'bea', 'miller', 'Friend', 'no'),
+(19, NULL, NULL, 'scha', 'f', 'Close Friend', 'no');
 
 -- --------------------------------------------------------
 
@@ -307,7 +314,7 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT for table `closefriends`
 --
 ALTER TABLE `closefriends`
-  MODIFY `closeFriendID` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `closeFriendID` int(1) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `comments`

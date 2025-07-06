@@ -1,26 +1,26 @@
 <?php
 include("connect.php");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST['f_Name'])) {
-      $f_Name = mysqli_real_escape_string($conn, $_POST['f_Name']);
-      $l_Name = mysqli_real_escape_string($conn, $_POST['l_Name']);
-      $status = mysqli_real_escape_string($conn, $_POST['status']);
-
-      $insertQuery = "INSERT INTO closefriends (f_Name, l_Name, status) VALUES ('$f_Name', '$l_Name', '$status')";
+if (isset($_POST['btnAdd'])){
+      $fName= $_POST['fName'];
+      $lName= $_POST['lName'];
+      $status= $_POST['status'];
+      $insertQuery = "INSERT INTO closefriends (fName, lName, status, is_deleted) VALUES ('$fName', '$lName', '$status', 'no' )";
       executeQuery($insertQuery); 
   }
 
   if (isset($_POST['delete_id'])) {
-      $delete_id = mysqli_real_escape_string($conn, $_POST['delete_id']);
-      
+      $delete_id= $_POST['delete_id'];
+
       $deleteQuery = "UPDATE closefriends SET is_deleted = 'yes' WHERE closeFriendID = '$delete_id'";
       executeQuery($deleteQuery); 
   }
-}
 
 
-$query = "SELECT * FROM closefriends WHERE is_deleted = 'no'";
+
+
+
+$query = "SELECT * FROM closefriends WHERE is_deleted = 'no' ORDER BY closeFriendID DESC";
 $result = executeQuery($query);
 
 ?>
@@ -59,8 +59,8 @@ $result = executeQuery($query);
       <div class="card p-4">
         <form action="" method="POST">
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="f_Name" placeholder="First Name" required>
-            <input type="text" class="form-control" name="l_Name" placeholder="Last Name">
+            <input type="text" class="form-control" name="fName" placeholder="First Name" required>
+            <input type="text" class="form-control" name="lName" placeholder="Last Name">
 
             <select class="form-control" name="status" required>
               <option value="" disabled selected>Status</option>
@@ -68,28 +68,31 @@ $result = executeQuery($query);
               <option value="Friend">Friend</option>
             </select>
 
-            <button class="btn btn-primary" type="submit">Add</button>
+            <button class=" btn btn-primary" name="btnAdd"type="submit">Add</button>
           </div>
         </form>
       </div>
     </div>
 
     <div class="row mt-4">
-      <?php if (mysqli_num_rows($result) > 0): ?>
-        <?php while ($user = mysqli_fetch_assoc($result)): ?>
-          <?php
-          $status = isset($user["status"]) && $user["status"] === "Close Friend";
+      <?php 
+      if (mysqli_num_rows($result) > 0){
+         while ($user = mysqli_fetch_assoc($result))
+
+{
+          $status =  $user["status"] == "Close Friend";
           $cardClasses = "card rounded-4 shadow my-3 mx-5";
           $backgroundColor = $status ? "lightblue" : "#e0f7e0";
           ?>
+
           <div class="col-12">
             <div class="<?php echo $cardClasses; ?>" style="background-color: <?php echo $backgroundColor; ?>;">
               <div class="card-body">
                 <h5 class="card-title">
-                  <?php echo htmlspecialchars($user["f_Name"] . " " . $user["l_Name"]); ?>
+                  <?php echo $user["fName"] . " " . $user["lName"]; ?>
                 </h5>
                 <p class="card-text">
-                  Status: <?php echo isset($user["status"]) ? htmlspecialchars($user["status"]) : "Unknown"; ?>
+                  Status: <?php echo $user["status"]  ?>
                 </p>
                 <form action="" method="POST" onsubmit="return confirmDelete();">
                   <input type="hidden" name="delete_id" value="<?php echo $user['closeFriendID']; ?>">
@@ -98,12 +101,13 @@ $result = executeQuery($query);
               </div>
             </div>
           </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <p>No close friends found.</p>
-      <?php endif; ?>
-    </div>
-  </div>
+      
+<?php 
+    } 
+  } 
+  ?>
+</div>
+
 
   <script>
     function confirmDelete() {

@@ -22,12 +22,16 @@ $result = executeQuery($query);
       <!-- PHP BLOCK -->
       <?php
       if (mysqli_num_rows($result) > 0) {
-        while ($user = mysqli_fetch_assoc($result)) {
+        while ($user = mysqli_fetch_assoc($result))
+        
+        {
           $status = $user["status"] == "Close Friend";
           $cardClasses = $status ? "card rounded-4 shadow my-3 mx-5" : "card rounded-4 my-3 mx-5";
           $backgroundColor = $status ? "lightblue" : "darkgray";
           $fontColor = $status ? "black" : "lightgray";
           ?>
+
+          
           <div class="col-12">
             <div class="<?php echo $cardClasses; ?>" style="background-color: <?php echo $backgroundColor; ?>; color: <?php echo $fontColor; ?>;">
               <div class="card-body">
