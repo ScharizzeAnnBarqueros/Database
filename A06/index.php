@@ -6,10 +6,11 @@ if (isset($_POST['btnAdd'])){
       $lName= $_POST['lName'];
       $status= $_POST['status'];
       $insertQuery = "INSERT INTO closefriends (fName, lName, status, is_deleted) VALUES ('$fName', '$lName', '$status', 'no' )";
-      executeQuery($insertQuery); 
+      executeQuery($insertQuery);
+       header('Location: ./'); 
   }
 
-  if (isset($_POST['delete_id'])) {
+  if (isset($_POST['btnDelete'])) {
       $delete_id= $_POST['delete_id'];
 
       $deleteQuery = "UPDATE closefriends SET is_deleted = 'yes' WHERE closeFriendID = '$delete_id'";
@@ -95,8 +96,8 @@ $result = executeQuery($query);
                   Status: <?php echo $user["status"]  ?>
                 </p>
                 <form action="" method="POST" onsubmit="return confirmDelete();">
-                  <input type="hidden" name="delete_id" value="<?php echo $user['closeFriendID']; ?>">
-                  <button class="btn btn-danger" type="submit">Remove</button>
+                  <input type="hidden" name= "delete_id"value="<?php echo $user['closeFriendID']; ?>">
+                  <button class="btn btn-danger" name= "btnDelete"type="submit">Remove</button>
                 </form>
               </div>
             </div>

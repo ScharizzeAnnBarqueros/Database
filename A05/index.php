@@ -36,7 +36,7 @@ $result = executeQuery($query);
             <div class="<?php echo $cardClasses; ?>" style="background-color: <?php echo $backgroundColor; ?>; color: <?php echo $fontColor; ?>;">
               <div class="card-body">
                 <h5 class="card-title">
-                  <?php echo $user["f_Name"] . " " . $user["l_Name"]; ?>
+                  <?php echo $user["fName"] . " " . $user["lName"]; ?>
                 </h5>
               </div>
             </div>

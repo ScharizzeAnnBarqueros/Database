@@ -1,33 +1,36 @@
 <?php
 include("connect.php");
 
-if(isset($_POST['btnSubmitFriend'])){
-  $f_Name = $_POST['f_Name'];
-  $l_Name = $_POST['l_Name'];
-    $status = $_POST['status'];
+if (isset($_POST['btnAdd'])) {
+  $fName = $_POST['fName'];
+  $lName = $_POST['lName'];
+  $status = $_POST['status'];
 
-    $insertQuery = "INSERT INTO closefriends (f_Name, l_Name, status) VALUES ('$f_Name', '$l_Name', '$status')";
-    executeQuery($insertQuery);
-  }
+  $insertQuery = "INSERT INTO closefriends (fName, lName, status, is_deleted) VALUES ('$fName', '$lName', '$status', 'no' )";
+  executeQuery($insertQuery);
+   header('Location: ./');
+}
 
-  // Deleting a friend (soft delete)
-  if (isset($_POST['delete_id'])) {
-    $delete_id = $_POST['delete_id'];
-    $deleteQuery = "UPDATE closefriends SET is_deleted = 'yes' WHERE closeFriendID = '$delete_id'";
-    executeQuery($deleteQuery);
-  }
+// Deleting a friend (soft delete)
+if (isset($_POST['btnDelete'])) {
+  $delete_id = $_POST['delete_id'];
 
-  // Editing a friend's status
-  if (isset($_POST['btnEdit']) && isset($_POST['closeFriendID'])) {
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
-    $closeFriendID = mysqli_real_escape_string($conn, $_POST['closeFriendID']);
+  $deleteQuery = "UPDATE closefriends SET is_deleted = 'yes' WHERE closeFriendID = '$delete_id'";
+  executeQuery($deleteQuery);
+}
 
-    $editQuery = "UPDATE closefriends SET status='$status' WHERE closeFriendID='$closeFriendID'";
-    executeQuery($editQuery);
-  }
+// Editing a friend's status
+if (isset($_POST['btnEdit'])) {
 
-// Fetch all friends that are not deleted
-$query = "SELECT * FROM closefriends WHERE is_deleted = 'no'";
+  $status = $_POST['status'];
+  $closeFriendID = $_POST['closeFriendID'];
+
+
+  $editQuery = "UPDATE closefriends SET status='$status' WHERE closeFriendID='$closeFriendID'";
+  executeQuery($editQuery);
+}
+
+$query = "SELECT * FROM closefriends WHERE is_deleted = 'no' ORDER BY closeFriendID DESC";
 $result = executeQuery($query);
 ?>
 <!doctype html>
@@ -70,8 +73,8 @@ $result = executeQuery($query);
       <div class="card p-4">
         <form action="" method="POST">
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="f_Name" placeholder="First Name" required>
-            <input type="text" class="form-control" name="l_Name" placeholder="Last Name">
+            <input type="text" class="form-control" name="fName" placeholder="First Name" required>
+            <input type="text" class="form-control" name="lName" placeholder="Last Name">
 
             <select class="form-control" name="status" required>
               <option value="" disabled selected>Status</option>
@@ -79,30 +82,31 @@ $result = executeQuery($query);
               <option value="Friend">Friend</option>
             </select>
 
-            <button class="btn btn-primary" type="submit">Add</button>
+            <button class="btn btn-primary" name="btnAdd" type="submit">Add</button>
           </div>
         </form>
       </div>
     </div>
 
     <div class="row mt-4">
-      <?php if (mysqli_num_rows($result) > 0): ?>
-        <?php while ($user = mysqli_fetch_assoc($result)): ?>
-          <?php
-          $status = isset($user["status"]) && $user["status"] === "Close Friend";
+      <?php
+      if (mysqli_num_rows($result) > 0) {
+        while ($user = mysqli_fetch_assoc($result)) {
+          $status = $user["status"] == "Close Friend";
           $cardClasses = "card rounded-4 shadow my-3 mx-5";
           $backgroundColor = $status ? "lightblue" : "#e0f7e0";
           ?>
+
           <div class="col-12">
             <div class="<?php echo $cardClasses; ?>" style="background-color: <?php echo $backgroundColor; ?>;">
               <div class="card-body">
                 <h5 class="card-title">
-                  <?php echo htmlspecialchars($user["f_Name"] . " " . $user["l_Name"]); ?>
+                  <?php echo $user["fName"] . " " . $user["lName"]; ?>
                 </h5>
 
                 <!-- Status as text or dropdown -->
                 <p class="card-text" id="statusText<?php echo $user['closeFriendID']; ?>">
-                  Status: <?php echo htmlspecialchars($user["status"]); ?>
+                  Status: <?php echo $user["status"]  ?>
                 </p>
 
                 <div id="statusDropdown<?php echo $user['closeFriendID']; ?>" class="status-dropdown">
@@ -121,7 +125,7 @@ $result = executeQuery($query);
                   <div class="col-2">
                     <form action="" method="POST" onsubmit="return confirmDelete();">
                       <input type="hidden" name="delete_id" value="<?php echo $user['closeFriendID']; ?>">
-                      <button class="btn btn-danger w-100" type="submit">Remove</button>
+                      <button class="btn btn-danger w-100" name="btnDelete" type="submit">Remove</button>
                     </form>
                   </div>
                   <div class="col-2">
@@ -134,38 +138,36 @@ $result = executeQuery($query);
               </div>
             </div>
           </div>
-        <?php endwhile; ?>
-      <?php else: ?>
-        <p>No close friends found.</p>
-      <?php endif; ?>
-    </div>
-  </div>
-
-  <script>
-    // Function to toggle the visibility of the status dropdown and status text
-    function toggleStatusDropdown(friendID) {
-      var statusText = document.getElementById('statusText' + friendID);
-      var statusDropdown = document.getElementById('statusDropdown' + friendID);
-
-      // Toggle between showing status text and dropdown
-      if (statusText.style.display === "none") {
-        statusText.style.display = "block";
-        statusDropdown.style.display = "none";
-      } else {
-        statusText.style.display = "none";
-        statusDropdown.style.display = "block";
+        <?php
+        }
       }
-    }
+      ?>
+    </div>
+    <script>
+      // Function to toggle the visibility of the status dropdown and status text
+      function toggleStatusDropdown(friendID) {
+        var statusText = document.getElementById('statusText' + friendID);
+        var statusDropdown = document.getElementById('statusDropdown' + friendID);
 
-    // Confirm delete action
-    function confirmDelete() {
-      return confirm("Are you sure you want to remove this friend?");
-    }
-  </script>
+        // Toggle between showing status text and dropdown
+        if (statusText.style.display === "none") {
+          statusText.style.display = "block";
+          statusDropdown.style.display = "none";
+        } else {
+          statusText.style.display = "none";
+          statusDropdown.style.display = "block";
+        }
+      }
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-    crossorigin="anonymous"></script>
+      // Confirm delete action
+      function confirmDelete() {
+        return confirm("Are you sure you want to remove this friend?");
+      }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"></script>
 </body>
 
 </html>

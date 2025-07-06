@@ -2,22 +2,20 @@
 include("connect.php");
 
 // Check if form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $f_Name = mysqli_real_escape_string($conn, $_POST['f_Name']);
-    $l_Name = mysqli_real_escape_string($conn, $_POST['l_Name']);
-    $status = mysqli_real_escape_string($conn, $_POST['status']);
+if (isset($_POST['btnAdd'])) {
+  $fName = $_POST['fName'];
+  $lName = $_POST['lName'];
+  $status = $_POST['status'];
 
-    // Insert query
-    $insertQuery = "INSERT INTO closefriends (f_Name, l_Name, status) VALUES ('$f_Name', '$l_Name', '$status')";
-    if (mysqli_query($conn, $insertQuery)) {
-    } else {
-        echo "Error: " . $insertQuery . "<br>" . mysqli_error($conn);
-    }
+  $insertQuery = "INSERT INTO closefriends (fName, lName, status, is_deleted) VALUES ('$fName', '$lName', '$status', 'no' )";
+  executeQuery($insertQuery);
+
+   header('Location: ./');
 }
 
 // Fetch records
-$selectQuery = "SELECT * FROM closefriends";
-$result = executeQuery($query);
+$selectQuery = "SELECT * FROM closefriends WHERE is_deleted = 'no' ORDER BY closeFriendID DESC";
+$result = executeQuery(query: $selectQuery);
 
 ?>
 
@@ -49,8 +47,8 @@ $result = executeQuery($query);
         <!-- Form to input data -->
         <form action="" method="POST">
           <div class="input-group mb-3">
-            <input type="text" class="form-control" name="f_Name" placeholder="First Name" required>
-            <input type="text" class="form-control" name="l_Name" placeholder="Last Name" >
+            <input type="text" class="form-control" name="fName" placeholder="First Name" required>
+            <input type="text" class="form-control" name="lName" placeholder="Last Name" >
             
             <!-- Dropdown for Status (Non-editable) -->
             <select class="form-control" name="status" required>
@@ -59,7 +57,7 @@ $result = executeQuery($query);
               <option value="Friend">Friend</option>
             </select>
             
-            <button class="btn btn-primary" type="submit">Add</button>
+            <button class="btn btn-primary" name="btnAdd" type="submit">Add</button>
           </div>
         </form>
       </div>
@@ -67,34 +65,34 @@ $result = executeQuery($query);
 
     <!-- Display close friends list -->
     <div class="row mt-4">
-    <?php if (mysqli_num_rows($result) > 0): ?>
-    <?php while ($user = mysqli_fetch_assoc($result)): ?>
-        <?php
-        // Check if "status" key exists to avoid undefined array key warning
-        $status = isset($user["status"]) && $user["status"] === "Close Friend";
-        $cardClasses =   "card rounded-4 shadow my-3 mx-5";
-        $backgroundColor = $status ? "lightblue" : "#e0f7e0";
-        ?>
+   <?php
+      if (mysqli_num_rows($result) > 0) {
+        while ($user = mysqli_fetch_assoc($result)) {
+
+
+    $status = $user["status"] == "Close Friend";
+          $cardClasses = "card rounded-4 shadow my-3 mx-5";
+          $backgroundColor = $status ? "lightblue" : "#e0f7e0";
+          ?>
+
         <div class="col-12">
             <div class="<?php echo $cardClasses; ?>" style="background-color: <?php echo $backgroundColor; ?>; color: <?php echo $fontColor; ?>;">
                 <div class="card-body">
                     <h5 class="card-title">
-                        <?php echo htmlspecialchars($user["f_Name"] . " " . $user["l_Name"]); ?>
+                        <?php echo $user["fName"] . " " . $user["lName"]; ?>
                     </h5>
                     <p class="card-text">
-                        Status: <?php echo isset($user["status"]) ? htmlspecialchars($user["status"]) : "Unknown"; ?>
+                        Status: <?php echo ($user["status"]) ?>
                     </p>
                 </div>
             </div>
-        </div>
-    <?php endwhile; ?>
-<?php else: ?>
-    <p>No close friends found.</p>
-<?php endif; ?>
-
+                 </div>
+        <?php
+        }
+      }
+      ?>
     </div>
-  </div>
-
+    <script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
